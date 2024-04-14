@@ -1,0 +1,14 @@
+
+
+# Docker
+.docker 
+
+# Python
+file_management/__pycache__/
+file_management/*/__pycache__/
+file_management/*/*/__pycache__/
+file_management/*/*/*/__pycache__/
+.env/
+.venv/
+venv/
+./file_management/file_management/media
