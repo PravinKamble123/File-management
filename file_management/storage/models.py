@@ -24,3 +24,30 @@ class File(models.Model):
         ordering = ['created_at']
 
 
+class FilePermission(models.Model):
+    user = models.ForeignKey(CustomUser, related_name='file_permissions', on_delete=models.CASCADE, db_column='user_id')
+    file = models.ForeignKey(File, related_name='permissions', on_delete=models.CASCADE, db_column='file_id')
+    can_view = models.BooleanField(default=False)
+    can_edit = models.BooleanField(default=False)
+    can_delete = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['file', 'user']
+
+
+class FolderPermission(models.Model):
+    user = models.ForeignKey(CustomUser, related_name='folder_permissions', on_delete=models.CASCADE, db_column='user_id')
+    folder = models.ForeignKey(Folder, related_name='permissions', on_delete=models.CASCADE, db_column='folder_id')
+    can_view = models.BooleanField(default=False)
+    can_edit = models.BooleanField(default=False)
+    can_delete = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['folder', 'user']
+

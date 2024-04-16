@@ -83,6 +83,30 @@ def file_detail(request, pk):
         print(str(e))
         return Response({'message': "Something went wrong"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['PUT'])
+def move_file(request, pk):
+    try:
+        _file = File.objects.get(pk=pk, owner=request.user)
+    
+        if not request.data.get('folder_id'):
+            return Response({'message': "Folder Id missing"}, status=status.HTTP_400_BAD_REQUEST)
+        folder = Folder.objects.get(pk=request.data.get('folder_id'), owner=request.user)
+
+        _file.folder = folder
+        _file.save()
+
+        return Response({'message': "File moved successfully", 'data': FileSerializer(_file).data}, status=status.HTTP_200_OK)
+    
+    except File.DoesNotExist:
+        return Response({'message': "File not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Folder.DoesNotExist:
+        return Response({'message': "Folder not exists or not belongs you."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(str(e))
+        return Response({'message': "Something went wrong"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @api_view(['DELETE'])
 def delete_file(request, pk):
     try:
@@ -159,6 +183,23 @@ def folder_detail(request, pk):
     except Exception as e:
         print(str(e))
         return Response({'message': "Something went wrong"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PUT'])
+def move_folder(request, pk):
+    try:
+        folder = Folder.objects.get(pk=pk, owner=request.user)
+        parent_folder = Folder.objects.get(pk=request.data.get('folder_id'), owner=request.user)
+
+        folder.parent_folder = parent_folder
+        folder.save()
+        return Response({'message': "Folder moved successfully", 'data': FolderSerializer(folder).data}, status=status.HTTP_200_OK)
+    except Folder.DoesNotExist:
+        return Response({'message': "Folder not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        print(str(e))
+        return Response({'message': "Something went wrong"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['DELETE'])
 def delete_folder(request, pk):
